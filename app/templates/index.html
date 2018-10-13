@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Articles</title>
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+
+<div class="page">
+
+    <h1>Articles</h1>
+
+    <form action="{{ url_for('add_article') }}" method="post" class="add-article">
+        <dl>
+            <dt>Title:</dt>
+            <dd><input type="text" size="30" name="name"></dd>
+            <dt>Text:</dt>
+            <dd><textarea name="body" rows="5" cols="40"></textarea></dd>
+            <dd><input type="submit" value="Create"></dd>
+        </dl>
+    </form>
+    <ul class="articles">
+        {% for article in articles %}
+        <li class="article"><h2 id="{{ article.post_id }}">{{ article.name }}</h2>{{ article.body|safe }}</li>
+        <form action="{{ url_for('delete_article') }}" method=post class=delete-entry>
+            <input type="hidden" name="post_id" value="{{ article.post_id }}">
+            <input type="submit" value="Delete" />
+        </form>
+        <form action="{{ url_for('edit_article') }}" method=post class=edit-entry>
+            <input type="hidden" name="post_id" value="{{ article.post_id }}">
+            <input type="submit" value="Edit" />
+        </form>
+        {% else %}
+        <li><em>No articles yet. Add some!</em></li>
+        {% endfor %}
+    </ul>
+
+</div>
+
+</body>
+</html>
