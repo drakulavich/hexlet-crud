@@ -45,36 +45,41 @@ def add_article():
     Add new post to database.
     """
 
-    if 'post_id' in request.form:
-        # update record
-        update_article = db.session.query(models.Article).get(request.form['post_id'])
-        update_article.name = request.form['name']
-        update_article.body = request.form['body']
-    else:
-        # create record
-        new_article = models.Article(request.form['name'], request.form['body'])
-        db.session.add(new_article)
+    new_article = models.Article(request.form['name'], request.form['body'])
+    db.session.add(new_article)
     db.session.commit()
 
-    flash('New entry was successfully posted')
+    flash('New entry was successfully created')
     return redirect(url_for('index'))
 
 
-@app.route('/delete', methods=['POST'])
-def delete_article():
+@app.route('/delete/<int:post_id>', methods=['GET', 'POST'])
+def delete_article(post_id):
     """
     Deletes post from database.
     """
 
-    db.session.query(models.Article).filter_by(post_id=request.form['post_id']).delete()
+    db.session.query(models.Article).filter_by(post_id=post_id).delete()
     db.session.commit()
     flash('The entry was deleted.')
     return redirect(url_for('index'))
 
 
-@app.route('/edit', methods=['POST'])
-def edit_article():
-    article = db.session.query(models.Article).get(request.form['post_id'])
+@app.route('/edit/<int:post_id>', methods=['GET', 'POST'])
+def edit_article(post_id):
+
+    if request.method == 'POST':
+        # update record
+        update_article = db.session.query(models.Article).get(post_id)
+        update_article.name = request.form['name']
+        update_article.body = request.form['body']
+        db.session.commit()
+
+        flash('The entry was successfully updated')
+        return redirect(url_for('index'))
+
+    # open page for editing
+    article = db.session.query(models.Article).get(post_id)
     return render_template('edit.html', article=article)
 
 
